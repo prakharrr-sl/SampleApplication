@@ -23,13 +23,19 @@ message = [
     }
 ]
 
+status_message = [
+    {
+        'status': 'Everything looks perfect!'
+    }
+]
+
 
 @app.route('/helloworld/api/prakhar', methods=['GET'])
 def get_message():
     return jsonify({'This is the content: ': message})
 
 
-#redirects to the messages array with id 1 only else abort with 404
+# redirects to the messages array with id 1 only else abort with 404
 @app.route('/helloworld/api/prakhar/<int:msg_id>', methods=['GET'])
 def get_mesasge(msg_id):
     msg = [msg for msg in message if msg['id'] == msg_id]
@@ -38,7 +44,28 @@ def get_mesasge(msg_id):
     return jsonify({'task': msg[0]})
 
 
+# route for health check
+@app.route('/health', methods=['GET'])
+def check():
+    msg = {
+        'status': 200,
+        'message': 'Works like a charm'
+    }
+    resp = jsonify(msg)
+    return resp
+
+
+@app.errorhandler(404)
+def not_found(error=None):
+    msg = {
+            'status': 404,
+            'message': 'Not Found'
+    }
+    resp = jsonify(msg)
+    resp.status_code = 404
+
+    return resp
+
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
-
-
+    app.run(debug=True)
